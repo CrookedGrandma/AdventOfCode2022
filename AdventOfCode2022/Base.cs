@@ -17,6 +17,28 @@ public abstract class Base
 
     protected abstract void Action();
 
+    protected void WriteLine(object x) {
+        WriteLine(x.ToString() ?? "");
+    }
+    protected void WriteLine(string x = "") {
+        Console.WriteLine(x);
+        OutputWriter.WriteLine(x);
+    }
+
+    protected void Write(object x) {
+        Write(x.ToString() ?? "");
+    }
+    protected void Write(string x = "") {
+        Console.Write(x);
+        OutputWriter.Write(x);
+    }
+
+    protected void B() {
+        WriteLine();
+        WriteLine("============== B ==============");
+        WriteLine();
+    }
+
     public void Run()
     {
         Action();
