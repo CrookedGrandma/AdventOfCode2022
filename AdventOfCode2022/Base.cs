@@ -33,6 +33,10 @@ public abstract class Base
         OutputWriter.Write(x);
     }
 
+    protected void UseExample() {
+        InputLines = File.ReadAllLines($"../../../Inputs/example{Day}.txt").ToList();
+    }
+
     protected void B() {
         WriteLine();
         WriteLine("============== B ==============");
