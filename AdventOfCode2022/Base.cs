@@ -49,3 +49,15 @@ public abstract class Base
         OutputWriter.Close();
     }
 }
+
+public class Tup<T1, T2>
+{
+    public T1 a;
+    public T2 b;
+
+    public Tup(T1 a, T2 b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+}
