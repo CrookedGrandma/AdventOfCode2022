@@ -61,3 +61,12 @@ public class Tup<T1, T2>
         this.b = b;
     }
 }
+
+public static class Extensions
+{
+    public static T[] GetRangeX<T>(this T[,] matrix, int y, int xstart, int xcount)
+        => Enumerable.Range(xstart, xcount).Select(x => matrix[x, y]).ToArray();
+
+    public static T[] GetRangeY<T>(this T[,] matrix, int x, int ystart, int ycount)
+        => Enumerable.Range(ystart, ycount).Select(y => matrix[x, y]).ToArray();
+}
