@@ -15,21 +15,7 @@ public class _9 : Base
             char dir = split[0][0];
             for (int i = 0; i < int.Parse(split[1]); i++)
             {
-                switch (dir)
-                {
-                    case 'R':
-                        head = head.Right();
-                        break;
-                    case 'L':
-                        head = head.Left();
-                        break;
-                    case 'U':
-                        head = head.Up();
-                        break;
-                    case 'D':
-                        head = head.Down();
-                        break;
-                }
+                head = HeadAfterMove(head, dir);
                 tail = TailPos(head, tail);
                 tailPositions.Add(tail);
             }
@@ -52,21 +38,7 @@ public class _9 : Base
             char dir = split[0][0];
             for (int i = 0; i < int.Parse(split[1]); i++)
             {
-                switch (dir)
-                {
-                    case 'R':
-                        head = head.Right();
-                        break;
-                    case 'L':
-                        head = head.Left();
-                        break;
-                    case 'U':
-                        head = head.Up();
-                        break;
-                    case 'D':
-                        head = head.Down();
-                        break;
-                }
+                head = HeadAfterMove(head, dir);
 
                 tails[0] = TailPos(head, tails[0]);
                 for (int j = 1; j < 9; j++)
@@ -82,6 +54,18 @@ public class _9 : Base
         count = diff.Count();
 
         WriteLine(count);
+    }
+
+    private Pos HeadAfterMove(Pos head, char dir)
+    {
+        return dir switch
+        {
+            'R' => head.Right(),
+            'L' => head.Left(),
+            'U' => head.Up(),
+            'D' => head.Down(),
+            _ => throw new Exception("nope move")
+        };
     }
 
     private Pos TailPos(Pos head, Pos tail)
