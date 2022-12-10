@@ -34,6 +34,7 @@ public abstract class Base
     }
 
     protected void UseExample() {
+        WriteLine("##### EXAMPLE OUTPUT #####");
         InputLines = File.ReadAllLines($"../../../Inputs/example{Day}.txt").ToList();
     }
 
