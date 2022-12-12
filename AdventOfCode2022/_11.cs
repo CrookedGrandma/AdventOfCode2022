@@ -3,7 +3,7 @@
 namespace AdventOfCode2022;
 public class _11 : Base {
     protected override void Action() {
-        UseExample();
+        //UseExample();
         List<Monkey> monkeys = new();
         for (int i = 0; i < InputLines.Count; i += 7) {
             List<ulong> items = Regex.Split(InputLines[i + 1][18..], @", ").Select(s => ulong.Parse(s)).ToList();
@@ -15,7 +15,7 @@ public class _11 : Base {
         }
 
         ulong modulo = monkeys.Select(m => m.divisibility).Aggregate((a, b) => a * b);
-        for (int r = 0; r < 1000; r++) {
+        for (int r = 0; r < 10000; r++) {
             foreach (Monkey m in monkeys) {
                 m.ThrowItems(monkeys, modulo);
             }
