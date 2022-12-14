@@ -13,4 +13,21 @@ public static class Extensions
 
     public static T[] GetRangeY<T>(this T[,] matrix, int x, int ystart, int ycount)
         => Enumerable.Range(ystart, ycount).Select(y => matrix[x, y]).ToArray();
+
+    /// <summary>
+    /// Range from <paramref name="start"/> (inclusive) to <paramref name="stop"/> (inclusive)
+    /// </summary>
+    public static IEnumerable<int> RangeIterator(int start, int stop, int step = 1)
+    {
+        int x = start;
+
+        do
+        {
+            yield return x;
+            x += step;
+            if (step < 0 && x < stop || 0 < step && stop < x)
+                break;
+        }
+        while (true);
+    }
 }
