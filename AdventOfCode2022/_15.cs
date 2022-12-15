@@ -9,6 +9,8 @@ public class _15 : Base
         //UseExample();
         //const int YROW = 10;
         const int YROW = 2_000_000;
+        //const int MAX = 20;
+        const int MAX = 4_000_000;
         List<Tile15> sensors = new();
         List<Tile15> beacons = new();
         foreach (string line in InputLines)
@@ -47,8 +49,8 @@ public class _15 : Base
             int remainder = sensor.Range - ydiff;
             for (int d = 0; d <= remainder; d++)
             {
-                if (d % 1000 == 0)
-                    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
+                //if (d % 1000 == 0)
+                //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
                 int x1 = sensor.x - minX + d;
                 int x2 = sensor.x - minX - d;
                 y10[x1].SetContentIfUnknown(TileContent15.NoBeacon);
@@ -56,16 +58,104 @@ public class _15 : Base
             }
         }
 
+        // Don't do this with the full input
         //foreach (var t in y10)
         //    Write(Math.Abs(t.x % 10));
         //WriteLine();
         //WriteLine(y10.RowString());
+
         int nobeacon = y10.Where(t => t.KnownNoBeacon).Count();
         WriteLine(nobeacon);
 
         B();
 
+        Tile15 spot = new(0, 0);
+        for (int y = 0; y < MAX; y++)
+        {
+            Console.WriteLine($"Y: {y}");
+            Tile15[] yarr = new Tile15[width];
+            for (int x = 0; x < yarr.Length; x++)
+                yarr[x] = new Tile15(x + minX, y);
+            for (int i = 0; i < sensors.Count; i++)
+            {
+                Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
+                var sensor = sensors[i];
+                var beacon = beacons[i];
+                if (sensor.y == y)
+                    yarr[sensor.x - minX] = sensor;
+                if (beacon.y == y)
+                    yarr[beacon.x - minX] = beacon;
+                int ydiff = Math.Abs(sensor.y - y);
+                if (ydiff > sensor.Range)
+                    continue;
+                int remainder = sensor.Range - ydiff;
+                for (int d = 0; d <= remainder; d++)
+                {
+                    //if (d % 1000 == 0)
+                    //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
+                    int x1 = sensor.x - minX + d;
+                    int x2 = sensor.x - minX - d;
+                    yarr[x1].SetContentIfUnknown(TileContent15.NoBeacon);
+                    yarr[x2].SetContentIfUnknown(TileContent15.NoBeacon);
+                }
+            }
+            var freeSpace = yarr.Where(t => t.x >= 0 && t.x <= MAX && !t.Known).ToList();
+            if (freeSpace.Count == 0)
+                continue;
+            if (freeSpace.Count == 1)
+            {
+                spot = freeSpace[0];
+                break;
+            }
+            throw new Exception("???");
+        }
 
+        int answer = spot.x * 4_000_000 + spot.y;
+        WriteLine(answer);
+
+    }
+
+    public Tile15 ParallelPart2(int MAX, List<Tile15> sensors, List<Tile15> beacons)
+    {
+        Tile15 spot = new(0, 0);
+        Parallel.For(0, MAX, (y, state) =>
+        {
+            Console.WriteLine($"Y: {y}");
+            Tile15[] yarr = new Tile15[width];
+            for (int x = 0; x < yarr.Length; x++)
+                yarr[x] = new Tile15(x + minX, y);
+            for (int i = 0; i < sensors.Count; i++)
+            {
+                Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
+                var sensor = sensors[i];
+                var beacon = beacons[i];
+                if (sensor.y == y)
+                    yarr[sensor.x - minX] = sensor;
+                if (beacon.y == y)
+                    yarr[beacon.x - minX] = beacon;
+                int ydiff = Math.Abs(sensor.y - y);
+                if (ydiff > sensor.Range)
+                    continue;
+                int remainder = sensor.Range - ydiff;
+                for (int d = 0; d <= remainder; d++)
+                {
+                    //if (d % 1000 == 0)
+                    //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
+                    int x1 = sensor.x - minX + d;
+                    int x2 = sensor.x - minX - d;
+                    yarr[x1].SetContentIfUnknown(TileContent15.NoBeacon);
+                    yarr[x2].SetContentIfUnknown(TileContent15.NoBeacon);
+                }
+            }
+            var freeSpace = yarr.Where(t => t.x >= 0 && t.x <= MAX && !t.Known).ToList();
+            if (freeSpace.Count == 1)
+            {
+                spot = freeSpace[0];
+                state.Break();
+            }
+            throw new Exception("???");
+        });
+        return spot;
     }
 
     public (Tile15, Tile15) ParseLine(string line)
