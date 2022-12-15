@@ -71,16 +71,16 @@ public class _15 : Base
 
         //Tile15 spot = new(0, 0);
         int fx = -1, fy = -1;
-        for (int y = 2000; y < MAX; y++)
+        for (int y = 16000; y < MAX; y++)
         {
-            Console.WriteLine($"Y: {y}");
+            if (y % 1000 == 0) Console.WriteLine($"Y: {y}");
             //Tile15[] yarr = new Tile15[width];
             bool[] barr = new bool[width];
             //for (int x = 0; x < yarr.Length; x++)
                 //yarr[x] = new Tile15(x + minX, y);
             for (int i = 0; i < sensors.Count; i++)
             {
-                Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
+                //Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
                 var sensor = sensors[i];
                 var beacon = beacons[i];
                 if (sensor.y == y)
