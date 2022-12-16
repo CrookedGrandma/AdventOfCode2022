@@ -46,3 +46,27 @@ public struct Pos
 
     public override int GetHashCode() => x.GetHashCode() ^ y.GetHashCode();
 }
+
+public class EditableStack<T>
+{
+    private readonly List<T> items = new();
+
+    public T this[int index] => items[index];
+
+    public int Count => items.Count;
+
+    public void Push(T item) => items.Add(item);
+
+    public T Pop()
+    {
+        if (items.Count > 0)
+        {
+            T temp = items[Count - 1];
+            items.RemoveAt(Count - 1);
+            return temp;
+        }
+        throw new IndexOutOfRangeException("EditableStack contains no more elements");
+    }
+
+    public void Remove(int itemAtPosition) => items.RemoveAt(itemAtPosition);
+}
