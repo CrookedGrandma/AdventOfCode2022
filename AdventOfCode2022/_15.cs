@@ -74,70 +74,54 @@ public class _15 : Base
 
         const int NUMPARTS = 250;
         const int PARTSIZE = MAX / NUMPARTS;
-        for (int party = 10; party < NUMPARTS; party++)
+        for (int party = 45; party < NUMPARTS; party++)
         {
-            if (party >= 63 && party <= 88)
+            if (party >= 63 && party <= 100)
                 continue;
-            for (int partx = party == 10 ? 33 : 0; partx < NUMPARTS; partx++)
+            Console.WriteLine($"Partition {party} / {NUMPARTS}");
+            Console.WriteLine("Creating matrix");
+            bool[,] field = new bool[MAX, PARTSIZE];
+            foreach (Tile15 beacon in beacons)
             {
-                Console.WriteLine($"Partition ({partx},{party}) / ({NUMPARTS},{NUMPARTS})");
-                Console.WriteLine("Creating matrix");
-                bool[,] field = new bool[PARTSIZE, PARTSIZE];
-                foreach (Tile15 beacon in beacons)
-                {
-                    int xx = beacon.x + minX - partx * PARTSIZE;
-                    int yy = beacon.y + minY - party * PARTSIZE;
-                    if (xx >= 0 && xx <= PARTSIZE && yy >= 0 && yy <= PARTSIZE)
-                        field[xx, yy] = true;
-                }
-                foreach (Tile15 sensor in sensors)
-                {
-                    Console.WriteLine($"Handling sensor {sensors.IndexOf(sensor)} / {sensors.Count}");
-                    int xx = sensor.x + minX - partx * PARTSIZE;
-                    int yy = sensor.y + minY - party * PARTSIZE;
-                    if (xx >= 0 && xx <= PARTSIZE && yy >= 0 && yy <= PARTSIZE)
-                        field[xx, yy] = true;
+                int xx = beacon.x + minX;
+                int yy = beacon.y + minY - party * PARTSIZE;
+                if (xx >= 0 && xx <= MAX && yy >= 0 && yy <= PARTSIZE)
+                    field[xx, yy] = true;
+            }
+            foreach (Tile15 sensor in sensors)
+            {
+                if (sensors.IndexOf(sensor) < 16) continue;
+                Console.WriteLine($"Handling sensor {sensors.IndexOf(sensor)} / {sensors.Count}");
+                int xx = sensor.x + minX;
+                int yy = sensor.y + minY - party * PARTSIZE;
+                if (xx >= 0 && xx <= MAX && yy >= 0 && yy <= PARTSIZE)
+                    field[xx, yy] = true;
 
-                    int starty = -sensor.Range;
-                    int dif0y = sensor.y + starty + minY - party * PARTSIZE;
-                    if (dif0y < 0)
-                        starty -= dif0y;
-                    int endy = sensor.Range;
-                    int difey = sensor.y + endy + minY - party * PARTSIZE - PARTSIZE + 1;
-                    if (difey > 0)
-                        endy -= difey;
-                    for (int dy = starty; dy <= endy; dy++)
+                int starty = Math.Max(-sensor.Range, party * PARTSIZE - sensor.y);
+                int endy = Math.Min(sensor.Range, (party + 1) * PARTSIZE - sensor.y);
+                for (int dy = starty; dy < endy; dy++)
+                {
+                    int startx = Math.Max(dy - sensor.Range, -sensor.x);
+                    int endx = Math.Min(sensor.Range - dy, MAX - sensor.x);
+                    yy = sensor.y + dy - party * PARTSIZE;
+                    for (int dx = startx; dx < endx; dx++)
                     {
-                        int startx = dy - sensor.Range;
-                        int dif0x = sensor.x + startx + minX - partx * PARTSIZE;
-                        if (dif0x < 0)
-                            startx -= dif0x;
-                        int endx = sensor.Range - dy;
-                        int difex = sensor.x + endx + minX - partx * PARTSIZE - PARTSIZE + 1;
-                        if (difex > 0)
-                            endx -= difex;
-                        yy = sensor.y + dy + minY - party * PARTSIZE;
-                        //if (yy > PARTSIZE) break;
-                        for (int dx = startx; dx <= endx; dx++)
-                        {
-                            xx = sensor.x + dx + minX - partx * PARTSIZE;
-                            if (xx >= 0 && xx <= PARTSIZE && yy >= 0 && yy <= PARTSIZE)
-                                field[xx, yy] = true;
-                        }
+                        xx = sensor.x + dx;
+                        if (yy >= 0 && yy <= PARTSIZE)
+                            field[xx, yy] = true;
                     }
                 }
-                for (int y = 0; y < field.GetLength(1); y++)
+            }
+            for (int y = 0; y < field.GetLength(1); y++)
+            {
+                for (int x = 0; x < field.GetLength(0); x++)
                 {
-                    for (int x = 0; x < field.GetLength(0); x++)
+                    if (!field[x, y])
                     {
-                        if (!field[x, y])
-                        {
-                            fx = x + partx * PARTSIZE;
-                            fy = y + party * PARTSIZE;
-                            break;
-                        }
+                        fx = x;
+                        fy = y + party * PARTSIZE;
+                        break;
                     }
-                    if (fx >= 0 || fy >= 0) break;
                 }
                 if (fx >= 0 || fy >= 0) break;
             }
@@ -198,7 +182,9 @@ public class _15 : Base
         //}
 
         //int answer = spot.x * 4_000_000 + spot.y;
-        int answer = fx * 4_000_000 + fy;
+        WriteLine($"x = {fx}");
+        WriteLine($"y = {fy}");
+        long answer = (long)fx * 4_000_000 + (long)fy;
         WriteLine(answer);
     }
 
