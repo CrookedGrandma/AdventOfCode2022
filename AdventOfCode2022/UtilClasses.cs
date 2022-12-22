@@ -20,27 +20,41 @@ public class Tup<T1, T2>
     }
 }
 
-public struct Pos
+public class Pos
 {
     public int x;
     public int y;
 
+    public Pos() : this(0, 0) { }
     public Pos(int x, int y)
     {
         this.x = x;
         this.y = y;
     }
 
-    public Pos Right() => new Pos(x + 1, y);
-    public Pos Left() => new Pos(x - 1, y);
-    public Pos Up() => new Pos(x, y + 1);
-    public Pos Down() => new Pos(x, y - 1);
+    public Pos LeftDown() => new(x - 1, y - 1);
+    public Pos Left() => new(x - 1, y);
+    public Pos LeftUp() => new(x - 1, y + 1);
+    public Pos Up() => new(x, y + 1);
+    public Pos RightUp() => new(x + 1, y + 1);
+    public Pos Right() => new(x + 1, y);
+    public Pos RightDown() => new(x + 1, y - 1);
+    public Pos Down() => new(x, y - 1);
+
+    public Pos Add(int dx, int dy)
+    {
+        x += dx;
+        y += dy;
+        return this;
+    }
 
     public override string ToString() => $"({x}, {y})";
 
     public static bool operator ==(Pos a, Pos b) => a.x == b.x && a.y == b.y;
-
     public static bool operator !=(Pos a, Pos b) => !(a == b);
+
+    public static Pos operator +(Pos a, Pos b) => new(a.x + b.x, a.y + b.y);
+    public static Pos operator -(Pos a, Pos b) => new(a.x - b.x, a.y - b.y);
 
     public override bool Equals(object? obj) => this == (Pos)obj!;
 
