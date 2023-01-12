@@ -18,6 +18,8 @@ public class Tup<T1, T2>
         this.a = a;
         this.b = b;
     }
+
+    public override string ToString() => $"({a}, {b})";
 }
 
 public struct Pos

@@ -71,164 +71,57 @@ public class _15 : Base
 
         //Tile15 spot = new(0, 0);
         int fx = -1, fy = -1;
-
-        const int NUMPARTS = 250;
-        const int PARTSIZE = MAX / NUMPARTS;
-        for (int party = 45; party < NUMPARTS; party++)
+        RangeMerger rm = new();
+        for (int y = 0; y < MAX; y++)
         {
-            if (party >= 63 && party <= 100)
-                continue;
-            Console.WriteLine($"Partition {party} / {NUMPARTS}");
-            Console.WriteLine("Creating matrix");
-            bool[,] field = new bool[MAX, PARTSIZE];
-            foreach (Tile15 beacon in beacons)
-            {
-                int xx = beacon.x + minX;
-                int yy = beacon.y + minY - party * PARTSIZE;
-                if (xx >= 0 && xx <= MAX && yy >= 0 && yy <= PARTSIZE)
-                    field[xx, yy] = true;
-            }
-            foreach (Tile15 sensor in sensors)
-            {
-                if (sensors.IndexOf(sensor) < 16) continue;
-                Console.WriteLine($"Handling sensor {sensors.IndexOf(sensor)} / {sensors.Count}");
-                int xx = sensor.x + minX;
-                int yy = sensor.y + minY - party * PARTSIZE;
-                if (xx >= 0 && xx <= MAX && yy >= 0 && yy <= PARTSIZE)
-                    field[xx, yy] = true;
-
-                int starty = Math.Max(-sensor.Range, party * PARTSIZE - sensor.y);
-                int endy = Math.Min(sensor.Range, (party + 1) * PARTSIZE - sensor.y);
-                for (int dy = starty; dy < endy; dy++)
-                {
-                    int startx = Math.Max(dy - sensor.Range, -sensor.x);
-                    int endx = Math.Min(sensor.Range - dy, MAX - sensor.x);
-                    yy = sensor.y + dy - party * PARTSIZE;
-                    for (int dx = startx; dx < endx; dx++)
-                    {
-                        xx = sensor.x + dx;
-                        if (yy >= 0 && yy <= PARTSIZE)
-                            field[xx, yy] = true;
-                    }
-                }
-            }
-            for (int y = 0; y < field.GetLength(1); y++)
-            {
-                for (int x = 0; x < field.GetLength(0); x++)
-                {
-                    if (!field[x, y])
-                    {
-                        fx = x;
-                        fy = y + party * PARTSIZE;
-                        break;
-                    }
-                }
-                if (fx >= 0 || fy >= 0) break;
-            }
-            if (fx >= 0 || fy >= 0) break;
-        }
-
-
-        //for (int y = 164000; y < MAX; y++)
-        //{
-        //    if (y % 1000 == 0) Console.WriteLine($"Y: {y}");
-        //    //Tile15[] yarr = new Tile15[width];
-        //    bool[] barr = new bool[width];
-        //    //for (int x = 0; x < yarr.Length; x++)
-        //        //yarr[x] = new Tile15(x + minX, y);
-        //    for (int i = 0; i < sensors.Count; i++)
-        //    {
-        //        //Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
-        //        var sensor = sensors[i];
-        //        var beacon = beacons[i];
-        //        if (sensor.y == y)
-        //            //yarr[sensor.x - minX] = sensor;
-        //            barr[sensor.x - minX] = true;
-        //        if (beacon.y == y)
-        //            //yarr[beacon.x - minX] = beacon;
-        //            barr[beacon.x - minX] = true;
-        //        int ydiff = Math.Abs(sensor.y - y);
-        //        if (ydiff > sensor.Range)
-        //            continue;
-        //        int remainder = sensor.Range - ydiff;
-        //        for (int d = 0; d <= remainder; d++)
-        //        {
-        //            //if (d % 1000 == 0)
-        //            //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
-        //            int x1 = sensor.x - minX + d;
-        //            int x2 = sensor.x - minX - d;
-        //            //yarr[x1].SetContentIfUnknown(TileContent15.NoBeacon);
-        //            //yarr[x2].SetContentIfUnknown(TileContent15.NoBeacon);
-        //            barr[x1] = true;
-        //            barr[x2] = true;
-        //        }
-        //    }
-        //    //var freeSpace = yarr.Where(t => t.x >= 0 && t.x <= MAX && !t.Known).ToList();
-        //    //if (freeSpace.Count == 0)
-        //    //    continue;
-        //    //if (freeSpace.Count == 1)
-        //    //{
-        //    //    spot = freeSpace[0];
-        //    //    break;
-        //    //}
-        //    //throw new Exception("???");
-        //    int falseind = Array.IndexOf(barr[-minX..(MAX - minX + 1)], false);
-        //    if (falseind >= 0)
-        //    {
-        //        fx = falseind + minX;
-        //        fy = y;
-        //        break;
-        //    }
-        //}
-
-        //int answer = spot.x * 4_000_000 + spot.y;
-        WriteLine($"x = {fx}");
-        WriteLine($"y = {fy}");
-        long answer = (long)fx * 4_000_000 + (long)fy;
-        WriteLine(answer);
-    }
-
-    public Tile15 ParallelPart2(int MAX, List<Tile15> sensors, List<Tile15> beacons)
-    {
-        Tile15 spot = new(0, 0);
-        Parallel.For(0, MAX, (y, state) =>
-        {
-            Console.WriteLine($"Y: {y}");
-            Tile15[] yarr = new Tile15[width];
-            for (int x = 0; x < yarr.Length; x++)
-                yarr[x] = new Tile15(x + minX, y);
+            if (y % 100000 == 0) Console.WriteLine($"Y: {y}");
+            //bool[] barr = new bool[width];
             for (int i = 0; i < sensors.Count; i++)
             {
-                Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
+                //Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
                 var sensor = sensors[i];
                 var beacon = beacons[i];
-                if (sensor.y == y)
-                    yarr[sensor.x - minX] = sensor;
+                //if (sensor.y == y)
+                //    barr[sensor.x - minX] = true;
                 if (beacon.y == y)
-                    yarr[beacon.x - minX] = beacon;
+                    //barr[beacon.x - minX] = true;
+                    rm.AddRange(new(beacon.x, beacon.x));
                 int ydiff = Math.Abs(sensor.y - y);
                 if (ydiff > sensor.Range)
                     continue;
                 int remainder = sensor.Range - ydiff;
-                for (int d = 0; d <= remainder; d++)
-                {
-                    //if (d % 1000 == 0)
-                    //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
-                    int x1 = sensor.x - minX + d;
-                    int x2 = sensor.x - minX - d;
-                    yarr[x1].SetContentIfUnknown(TileContent15.NoBeacon);
-                    yarr[x2].SetContentIfUnknown(TileContent15.NoBeacon);
-                }
+                int left = sensor.x - remainder; // inclusive
+                int right = sensor.x + remainder; // inclusive
+                rm.AddRange(new(left, right));
+
+                //int testvalue = sensor.x - minX - remainder;
+                //for (int d = 0; d <= remainder; d++)
+                //{
+                //    //if (d % 1000 == 0)
+                //    //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
+                //    int x1 = sensor.x - minX + d;
+                //    int x2 = sensor.x - minX - d;
+                //    barr[x1] = true;
+                //    barr[x2] = true;
+                //}
             }
-            var freeSpace = yarr.Where(t => t.x >= 0 && t.x <= MAX && !t.Known).ToList();
-            if (freeSpace.Count == 1)
+            //int falseind = Array.IndexOf(barr[-minX..(MAX - minX + 1)], false);
+            int falseind = rm.MissingPositionBetween(0, MAX);
+            if (falseind >= 0)
             {
-                spot = freeSpace[0];
-                state.Break();
+                //fx = falseind + minX;
+                fx = falseind;
+                fy = y;
+                break;
             }
-            throw new Exception("???");
-        });
-        return spot;
+            rm.Reset();
+        }
+
+        Console.WriteLine("Answer found!");
+        WriteLine($"x: {fx}");
+        WriteLine($"y: {fy}");
+        long answer = (long)fx * 4_000_000 + (long)fy;
+        WriteLine(answer);
     }
 
     public (Tile15, Tile15) ParseLine(string line)
@@ -242,6 +135,53 @@ public class _15 : Base
         Tile15 beacon = new(bx, by, TileContent15.Beacon);
         return (sensor, beacon);
     }
+}
+
+public class RangeMerger
+{
+    private List<Tup<int, int>> ranges;
+    public RangeMerger()
+    {
+        ranges = new();
+    }
+
+    public void AddRange(Tup<int, int> inclusiveRange) => ranges.Add(inclusiveRange);
+
+    public int MissingPositionBetween(int min, int max)
+    {
+        if (ranges.Count == 0)
+            throw new Exception("no range set uwu");
+        ranges.Sort((a, b) =>
+        {
+            if (a.a == b.a)
+                return a.b - b.b;
+            return a.a - b.a;
+        });
+        if (ranges[0].a > min)
+            return min;
+        //Stack<Tup<int, int>> stack = new();
+        //stack.Push(ranges[0]);
+        int right = ranges[0].b;
+        for (int i = 1; i < ranges.Count; i++)
+        {
+            //var top = stack.Peek();
+            //if (top.b < ranges[i].a)
+            //    stack.Push(ranges[i]);
+            //else if (top.b < ranges[i].b)
+            //{
+            //    top = ranges[i];
+            //    stack.Pop();
+            //    stack.Push(top);
+            //}
+            if (right < ranges[i].a)
+                return right + 1;
+            if (right < ranges[i].b)
+                right = ranges[i].b;
+        }
+        return right >= max ? -1 : right + 1;
+    }
+
+    public void Reset() => ranges.Clear();
 }
 
 public static class Extensions15
