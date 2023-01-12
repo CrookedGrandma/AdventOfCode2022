@@ -49,8 +49,6 @@ public class _15 : Base
             int remainder = sensor.Range - ydiff;
             for (int d = 0; d <= remainder; d++)
             {
-                //if (d % 1000 == 0)
-                //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
                 int x1 = sensor.x - minX + d;
                 int x2 = sensor.x - minX - d;
                 y10[x1].SetContentIfUnknown(TileContent15.NoBeacon);
@@ -58,33 +56,21 @@ public class _15 : Base
             }
         }
 
-        // Don't do this with the full input
-        //foreach (var t in y10)
-        //    Write(Math.Abs(t.x % 10));
-        //WriteLine();
-        //WriteLine(y10.RowString());
-
         int nobeacon = y10.Where(t => t.KnownNoBeacon).Count();
         WriteLine(nobeacon);
 
         B();
 
-        //Tile15 spot = new(0, 0);
         int fx = -1, fy = -1;
         RangeMerger rm = new();
         for (int y = 0; y < MAX; y++)
         {
             if (y % 100000 == 0) Console.WriteLine($"Y: {y}");
-            //bool[] barr = new bool[width];
             for (int i = 0; i < sensors.Count; i++)
             {
-                //Console.WriteLine($"Y {y} - sensor {i + 1} of {sensors.Count}");
                 var sensor = sensors[i];
                 var beacon = beacons[i];
-                //if (sensor.y == y)
-                //    barr[sensor.x - minX] = true;
                 if (beacon.y == y)
-                    //barr[beacon.x - minX] = true;
                     rm.AddRange(new(beacon.x, beacon.x));
                 int ydiff = Math.Abs(sensor.y - y);
                 if (ydiff > sensor.Range)
@@ -93,23 +79,10 @@ public class _15 : Base
                 int left = sensor.x - remainder; // inclusive
                 int right = sensor.x + remainder; // inclusive
                 rm.AddRange(new(left, right));
-
-                //int testvalue = sensor.x - minX - remainder;
-                //for (int d = 0; d <= remainder; d++)
-                //{
-                //    //if (d % 1000 == 0)
-                //    //    Console.WriteLine($"Sensor {i + 1} - distance {d} / {remainder}");
-                //    int x1 = sensor.x - minX + d;
-                //    int x2 = sensor.x - minX - d;
-                //    barr[x1] = true;
-                //    barr[x2] = true;
-                //}
             }
-            //int falseind = Array.IndexOf(barr[-minX..(MAX - minX + 1)], false);
             int falseind = rm.MissingPositionBetween(0, MAX);
             if (falseind >= 0)
             {
-                //fx = falseind + minX;
                 fx = falseind;
                 fy = y;
                 break;
@@ -159,20 +132,9 @@ public class RangeMerger
         });
         if (ranges[0].a > min)
             return min;
-        //Stack<Tup<int, int>> stack = new();
-        //stack.Push(ranges[0]);
         int right = ranges[0].b;
         for (int i = 1; i < ranges.Count; i++)
         {
-            //var top = stack.Peek();
-            //if (top.b < ranges[i].a)
-            //    stack.Push(ranges[i]);
-            //else if (top.b < ranges[i].b)
-            //{
-            //    top = ranges[i];
-            //    stack.Pop();
-            //    stack.Push(top);
-            //}
             if (right < ranges[i].a)
                 return right + 1;
             if (right < ranges[i].b)
