@@ -5,9 +5,9 @@ public class _14 : Base
 {
     private int minX = int.MaxValue, maxX = 0, maxY = 0;
     private int width, height;
-    private Tile[,] grid;
+    private Tile14[,] grid;
 
-    private Dictionary<int, Tile[]> grid2 = new();
+    private Dictionary<int, Tile14[]> grid2 = new();
 
     protected override void Action()
     {
@@ -28,7 +28,7 @@ public class _14 : Base
         width = maxX - minX + 1;
         height = maxY + 1;
 
-        grid = new Tile[width, height];
+        grid = new Tile14[width, height];
         for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
                 grid[x, y] = new(x + minX, y);
@@ -39,10 +39,10 @@ public class _14 : Base
             {
                 (int fx, int fy) = line[i];
                 (int tx, int ty) = line[i + 1];
-                Tile from = grid[fx - minX, fy];
-                Tile to = grid[tx - minX, ty];
-                List<Tile> range = SelectFromTo(from, to);
-                foreach (Tile t in range)
+                Tile14 from = grid[fx - minX, fy];
+                Tile14 to = grid[tx - minX, ty];
+                List<Tile14> range = SelectFromTo(from, to);
+                foreach (Tile14 t in range)
                     t.SetRock();
             }
         }
@@ -74,10 +74,10 @@ public class _14 : Base
             {
                 (int fx, int fy) = line[i];
                 (int tx, int ty) = line[i + 1];
-                Tile from = grid2[fx - minX][fy];
-                Tile to = grid2[tx - minX][ty];
-                List<Tile> range = SelectFromTo2(from, to);
-                foreach (Tile t in range)
+                Tile14 from = grid2[fx - minX][fy];
+                Tile14 to = grid2[tx - minX][ty];
+                List<Tile14> range = SelectFromTo2(from, to);
+                foreach (Tile14 t in range)
                     t.SetRock();
             }
         }
@@ -88,7 +88,7 @@ public class _14 : Base
             var pos = GetFinalPosition2(500 - minX, 0);
             if (pos.a == 500 - minX && pos.b == 0)
                 break;
-            DefinitelyAdd(pos.a, new Tile(pos.a + minX, pos.b, TileContent.Sand));
+            DefinitelyAdd(pos.a, new Tile14(pos.a + minX, pos.b, TileContent14.Sand));
             count2++;
         }
 
@@ -98,10 +98,10 @@ public class _14 : Base
         PrintGrid2();
     }
 
-    public void DefinitelyAdd(int x, Tile t)
+    public void DefinitelyAdd(int x, Tile14 t)
     {
         if (!grid2.ContainsKey(x))
-            grid2.Add(x, new Tile[maxY + 2]);
+            grid2.Add(x, new Tile14[maxY + 2]);
         grid2[x][t.y] = t;
     }
 
@@ -138,12 +138,12 @@ public class _14 : Base
     {
         if (y == maxY + 2) return false;
         if (!grid2.ContainsKey(x)) return true;
-        Tile? tile = grid2[x][y];
+        Tile14? tile = grid2[x][y];
         if (tile == null) return true;
         return tile.Open;
     }
 
-    private List<Tile> SelectFromTo(Tile from, Tile to)
+    private List<Tile14> SelectFromTo(Tile14 from, Tile14 to)
     {
         if (from.x == to.x)
             return Extensions.RangeIterator(from.y, to.y, Math.Sign(to.y - from.y)).Select(y => grid[from.x - minX, y]).ToList();
@@ -151,7 +151,7 @@ public class _14 : Base
             return Extensions.RangeIterator(from.x, to.x, Math.Sign(to.x - from.x)).Select(x => grid[x - minX, from.y]).ToList();
     }
 
-    private List<Tile> SelectFromTo2(Tile from, Tile to)
+    private List<Tile14> SelectFromTo2(Tile14 from, Tile14 to)
     {
         if (from.x == to.x)
             return Extensions.RangeIterator(from.y, to.y, Math.Sign(to.y - from.y)).Select(y => grid2[from.x - minX][y]).ToList();
@@ -180,7 +180,7 @@ public class _14 : Base
                 if (key - prev > 1)
                     foreach (int x in Extensions.RangeIterator(prev + 1, key - 1))
                         Write('.');
-                Tile t = grid2[key][y];
+                Tile14 t = grid2[key][y];
                 Write(t == null ? '.' : t.Char);
                 prev = key;
             }
@@ -192,39 +192,39 @@ public class _14 : Base
         => Regex.Split(line, " -> ").Select(x => x.Split(',')).Select(x => (int.Parse(x[0]), int.Parse(x[1]))).ToList();
 }
 
-public class Tile
+public class Tile14
 {
     public int x;
     public int y;
 
-    private TileContent content;
+    private TileContent14 content;
 
-    public Tile(int x, int y, TileContent content = TileContent.Open)
+    public Tile14(int x, int y, TileContent14 content = TileContent14.Open)
     {
         this.x = x;
         this.y = y;
         this.content = content;
     }
 
-    public bool Open => content == TileContent.Open;
+    public bool Open => content == TileContent14.Open;
 
-    public void SetSand() => content = TileContent.Sand;
+    public void SetSand() => content = TileContent14.Sand;
 
-    public void SetRock() => content = TileContent.Rock;
+    public void SetRock() => content = TileContent14.Rock;
 
     public override string ToString()
         => $"[{x}, {y}] ({content})";
 
     public char Char => (x == 500 && y == 0) ? '+' : content switch
     {
-        TileContent.Open => '.',
-        TileContent.Rock => '#',
-        TileContent.Sand => 'o',
+        TileContent14.Open => '.',
+        TileContent14.Rock => '#',
+        TileContent14.Sand => 'o',
         _ => throw new Exception("lmao"),
     };
 }
 
-public enum TileContent
+public enum TileContent14
 {
     Open,
     Rock,
